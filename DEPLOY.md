@@ -10,7 +10,7 @@
    Ensure all your changes are committed:
    ```bash
    git add .
-   git commit -m "feat: initial website build"
+   git commit -m "feat: website release build"
    git push origin main
    ```
 
@@ -73,4 +73,4 @@ jobs:
 
 4. **Verify Deployment**
    - Wait for the Action to complete.
-   - Visits `https://zenpad.github.io`.
+   - Visit `https://zenpad.github.io` (Ensure your repository is under the `zenpad` organization).
