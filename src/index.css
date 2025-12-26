@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Vibrant Dark Theme */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    /* Electric Violet / Neon Blue Accent */
+    --primary: 263 70% 65%;
+    /* Vivid Purple */
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 240 4% 16%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 84%;
+    /* Lighter for better visibility */
+
+    --accent: 263 70% 65%;
+    --accent-foreground: 210 40% 98%;
+
+    --border: 240 4% 16%;
+    --input: 240 4% 16%;
+    --ring: 263 70% 65%;
+  }
+
+  * {
+    @apply border-border;
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-white;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+  }
+
+  .glass {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10;
+  }
+}
