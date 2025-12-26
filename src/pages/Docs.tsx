@@ -1,9 +1,11 @@
 import { motion } from "framer-motion";
 import {
     Terminal, BookOpen, Download, Settings, FileText,
-    AlertTriangle, Github, Zap, Command, Moon, Cpu
+    AlertTriangle, Github, Zap, Command, Moon, Cpu, ChevronDown
 } from "lucide-react";
 import { Link } from "react-scroll";
+import * as Select from "@radix-ui/react-select";
+import { useState } from "react";
 
 const sections = [
     { id: "overview", title: "Overview" },
@@ -15,10 +17,59 @@ const sections = [
 ];
 
 export function DocsPage() {
+    // Mobile navigation state
+    const [activeSection, setActiveSection] = useState("overview");
+
+    // Scroll to section when selected from dropdown
+    const handleMobileNavChange = (value: string) => {
+        setActiveSection(value);
+        const element = document.getElementById(value);
+        if (element) {
+            const offset = -100;
+            const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+            const offsetPosition = elementPosition + offset;
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: "smooth"
+            });
+        }
+    };
+
     return (
         <div className="container mx-auto px-4 py-24 max-w-7xl">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
-                {/* Sidebar Navigation */}
+
+                {/* Mobile Section Navigator */}
+                <div className="lg:hidden sticky top-20 z-40 bg-background/95 backdrop-blur-xl border border-white/10 rounded-xl p-2 mb-8">
+                    <Select.Root value={activeSection} onValueChange={handleMobileNavChange}>
+                        <Select.Trigger className="w-full flex items-center justify-between px-4 py-3 bg-white/5 rounded-lg border border-white/5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <span className="flex items-center gap-2">
+                                <BookOpen className="w-4 h-4 text-primary" />
+                                <Select.Value placeholder="Jump to section..." />
+                            </span>
+                            <Select.Icon>
+                                <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                            </Select.Icon>
+                        </Select.Trigger>
+                        <Select.Portal>
+                            <Select.Content className="overflow-hidden bg-[#0a0a0a] border border-white/10 rounded-xl shadow-xl z-50 min-w-[var(--radix-select-trigger-width)]">
+                                <Select.Viewport className="p-2">
+                                    {sections.map((section) => (
+                                        <Select.Item
+                                            key={section.id}
+                                            value={section.id}
+                                            className="relative flex items-center px-4 py-3 text-sm text-muted-foreground hover:bg-white/10 hover:text-white rounded-lg cursor-pointer outline-none data-[state=checked]:text-primary data-[state=checked]:bg-primary/10"
+                                        >
+                                            <Select.ItemText>{section.title}</Select.ItemText>
+                                        </Select.Item>
+                                    ))}
+                                </Select.Viewport>
+                            </Select.Content>
+                        </Select.Portal>
+                    </Select.Root>
+                </div>
+
+                {/* Desktop Sidebar Navigation */}
                 <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -39,6 +90,7 @@ export function DocsPage() {
                                 className="block py-2 text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer relative group"
                                 activeClass="text-primary font-medium"
                                 spy={true}
+                                onSetActive={() => setActiveSection(section.id)}
                             >
                                 <span className="absolute -left-[17px] top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                                 {section.title}
@@ -56,7 +108,7 @@ export function DocsPage() {
                 >
                     {/* Header */}
                     <div className="border-b border-white/10 pb-8">
-                        <h1 className="text-4xl md:text-6xl font-bold mb-6">
+                        <h1 className="text-4xl md:text-6xl font-bold mb-6 break-words">
                             Documentation
                         </h1>
                         <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl">
@@ -66,7 +118,7 @@ export function DocsPage() {
 
                     {/* Overview */}
                     <section id="overview" className="scroll-mt-32 space-y-6">
-                        <h2 className="text-3xl font-bold">What is Zenpad?</h2>
+                        <h2 className="text-3xl font-bold mb-6">What is Zenpad?</h2>
                         <p className="text-lg text-muted-foreground leading-relaxed">
                             Zenpad is a native GTK application designed for developers who value speed and simplicity. It provides essential features like syntax highlighting and session management without the bloat of modern IDEs.
                         </p>
@@ -84,7 +136,7 @@ export function DocsPage() {
 
                     {/* Features */}
                     <section id="features" className="scroll-mt-32 space-y-6">
-                        <h2 className="text-3xl font-bold">Key Features</h2>
+                        <h2 className="text-3xl font-bold mb-6">Key Features</h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             <FeatureCard
                                 icon={Command} color="text-blue-400" bg="bg-blue-500/10"
@@ -111,7 +163,7 @@ export function DocsPage() {
 
                     {/* Installation */}
                     <section id="installation" className="scroll-mt-32 space-y-8">
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-4 mb-6">
                             <div className="p-3 rounded-xl bg-primary/10 text-primary">
                                 <Download className="w-6 h-6" />
                             </div>
@@ -121,12 +173,12 @@ export function DocsPage() {
                         <div className="space-y-6">
                             <div>
                                 <h3 className="text-xl font-bold mb-4">Option 1: Debian / Ubuntu (Recommended)</h3>
-                                <div className="p-6 rounded-2xl bg-black/40 border border-white/10 font-mono text-sm space-y-4">
-                                    <div className="flex gap-4 text-muted-foreground border-b border-white/5 pb-2">
+                                <div className="p-6 rounded-2xl bg-black/40 border border-white/10 font-mono text-sm space-y-4 overflow-x-auto">
+                                    <div className="flex gap-4 text-muted-foreground border-b border-white/5 pb-2 min-w-max">
                                         <Terminal className="w-4 h-4" />
                                         <span>Terminal</span>
                                     </div>
-                                    <div>
+                                    <div className="min-w-max">
                                         <p className="text-muted-foreground mb-2"># 1. Download the latest .deb package</p>
                                         <p className="text-muted-foreground mb-2"># 2. Install via apt to handle dependencies:</p>
                                         <div className="flex gap-2 text-blue-300">
@@ -139,15 +191,15 @@ export function DocsPage() {
 
                             <div>
                                 <h3 className="text-xl font-bold mb-4">Option 2: Build from Source</h3>
-                                <div className="p-6 rounded-2xl bg-black/40 border border-white/10 font-mono text-sm space-y-4">
-                                    <div>
+                                <div className="p-6 rounded-2xl bg-black/40 border border-white/10 font-mono text-sm space-y-4 overflow-x-auto">
+                                    <div className="min-w-max">
                                         <p className="text-muted-foreground mb-2"># Install dependencies</p>
                                         <div className="flex gap-2 text-amber-300">
                                             <span className="select-none text-muted-foreground">$</span>
                                             <span className="break-all">sudo apt install python3-gi gir1.2-gtksource-4</span>
                                         </div>
                                     </div>
-                                    <div>
+                                    <div className="min-w-max">
                                         <p className="text-muted-foreground mb-2"># Run directly</p>
                                         <div className="flex gap-2 text-white">
                                             <span className="select-none text-muted-foreground">$</span>
@@ -161,7 +213,7 @@ export function DocsPage() {
 
                     {/* Usage */}
                     <section id="usage" className="scroll-mt-32 space-y-6">
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-4 mb-6">
                             <div className="p-3 rounded-xl bg-primary/10 text-primary">
                                 <FileText className="w-6 h-6" />
                             </div>
@@ -178,11 +230,11 @@ export function DocsPage() {
                             <h3 className="text-white text-xl font-bold mt-8 mb-4">Quick Tips</h3>
                             <ul className="grid gap-4 list-none pl-0">
                                 <li className="flex gap-3">
-                                    <span className="bg-primary/20 text-primary px-2 py-0.5 rounded text-xs font-bold h-fit mt-1">NEW</span>
+                                    <span className="bg-primary/20 text-primary px-2 py-0.5 rounded text-xs font-bold h-fit mt-1 shrink-0">NEW</span>
                                     <span>Press <strong>Ctrl+N</strong> to open a new tab. Tabs are persistent saving your session automatically.</span>
                                 </li>
                                 <li className="flex gap-3">
-                                    <span className="bg-primary/20 text-primary px-2 py-0.5 rounded text-xs font-bold h-fit mt-1">FOCUS</span>
+                                    <span className="bg-primary/20 text-primary px-2 py-0.5 rounded text-xs font-bold h-fit mt-1 shrink-0">FOCUS</span>
                                     <span>Press <strong>F11</strong> to toggle Fullscreen and <strong>Ctrl+M</strong> to hide the menubar for a pure coding experience.</span>
                                 </li>
                             </ul>
@@ -191,18 +243,18 @@ export function DocsPage() {
 
                     {/* Configuration */}
                     <section id="configuration" className="scroll-mt-32 space-y-6">
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-4 mb-6">
                             <div className="p-3 rounded-xl bg-primary/10 text-primary">
                                 <Settings className="w-6 h-6" />
                             </div>
                             <h2 className="text-3xl font-bold">Configuration</h2>
                         </div>
-                        <p className="text-lg text-muted-foreground">
+                        <p className="text-lg text-muted-foreground break-words">
                             Zenpad stores its configuration in <code className="text-primary">~/.config/zenpad/settings.json</code>.
                         </p>
-                        <div className="p-6 rounded-2xl bg-[#0f0f0f] border border-white/10 font-mono text-sm overflow-hidden relative">
+                        <div className="p-6 rounded-2xl bg-[#0f0f0f] border border-white/10 font-mono text-sm overflow-hidden relative overflow-x-auto">
                             <div className="absolute top-4 right-4 text-xs text-muted-foreground">settings.json</div>
-                            <pre className="text-blue-300">
+                            <pre className="text-blue-300 min-w-max">
                                 {`{
   "theme": "zen-dark",
   "font_family": "Monospace",
@@ -218,7 +270,7 @@ export function DocsPage() {
 
                     {/* Troubleshooting */}
                     <section id="troubleshooting" className="scroll-mt-32 space-y-6">
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-4 mb-6">
                             <div className="p-3 rounded-xl bg-red-500/10 text-red-400">
                                 <AlertTriangle className="w-6 h-6" />
                             </div>
@@ -233,7 +285,7 @@ export function DocsPage() {
                                 </summary>
                                 <p className="mt-4 text-muted-foreground pl-4 border-l-2 border-primary">
                                     This means Python GObject bindings are missing. Run: <br />
-                                    <code className="text-white mt-2 block">sudo apt install python3-gi</code>
+                                    <code className="text-white mt-2 block break-all">sudo apt install python3-gi</code>
                                 </p>
                             </details>
 
