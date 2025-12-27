@@ -1,10 +1,27 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Terminal } from "lucide-react";
+import { ArrowRight, Terminal, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useLatestRelease } from "@/hooks/useLatestRelease";
+import { useState } from "react";
+import { DownloadDialog } from "@/components/ui/DownloadDialog";
 
 export function Hero() {
+    const { release, loading } = useLatestRelease();
+    const [showDownloadModal, setShowDownloadModal] = useState(false);
+
+    const handleDownload = () => {
+        // We let the default link behavior happen (downloading the file)
+        // But we simultaneously show the modal
+        setShowDownloadModal(true);
+    };
+
     return (
-        <section className="relative pt-32 pb-32 overflow-hidden">
+        <section className="relative min-h-[calc(100vh-4rem)] flex items-center justify-center overflow-hidden py-20 lg:py-0">
+            <DownloadDialog
+                open={showDownloadModal}
+                onOpenChange={setShowDownloadModal}
+            />
+
             {/* Vibrant Background Effects */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-primary/20 rounded-full blur-[120px] -z-10 mix-blend-screen animate-pulse" />
             <div className="absolute top-1/2 left-1/4 w-[300px] h-[300px] bg-blue-500/20 rounded-full blur-[100px] -z-10" />
@@ -18,7 +35,9 @@ export function Hero() {
                     className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-mono mb-8 text-primary shadow-lg shadow-primary/10 backdrop-blur-md"
                 >
                     <span className="flex h-2 w-2 rounded-full bg-primary animate-ping" />
-                    <span className="font-bold">v1.0.0 Now Available</span>
+                    <span className="font-bold">
+                        {loading ? "Checking functionality..." : `${release?.version || "v1.0.0"} Now Available`}
+                    </span>
                     <span className="text-muted-foreground hidden sm:inline px-1">•</span>
                     <span className="text-white">Linux Dedicated</span>
                 </motion.div>
@@ -52,11 +71,18 @@ export function Hero() {
                     className="flex flex-col sm:flex-row items-center gap-4"
                 >
                     <a
-                        href="https://github.com/jagdishtripathy/zenpad/releases/download/v1.0.0/zenpad_1.0.0_all.deb"
-                        className="h-14 px-8 rounded-full bg-primary text-white font-bold tracking-wide flex items-center gap-2 hover:bg-primary/90 hover:scale-105 transition-all shadow-lg shadow-primary/25"
+                        href={release?.downloadUrl || "https://github.com/jagdishtripathy/zenpad/releases"}
+                        className="h-14 px-8 rounded-full bg-primary text-white font-bold tracking-wide flex items-center gap-2 hover:bg-primary/90 hover:scale-105 transition-all shadow-lg shadow-primary/25 disabled:opacity-50 disabled:cursor-not-allowed"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={handleDownload}
                     >
-                        <Terminal className="w-5 h-5" />
-                        Download .deb
+                        {loading ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                            <Terminal className="w-5 h-5" />
+                        )}
+                        {loading ? "Fetching Latest..." : "Download .deb"}
                     </a>
                     <Link
                         to="/docs"
